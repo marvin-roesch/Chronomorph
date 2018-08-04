@@ -11,9 +11,7 @@ package io.paleocrafter.chronomorph.config
 import com.intellij.ide.ui.LafManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
-import com.intellij.openapi.options.SchemeManager
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.openapi.util.text.StringUtil
 import com.intellij.ui.ListCellRendererWrapper
 import io.paleocrafter.chronomorph.ChronomorphSettings
 import java.time.LocalTime

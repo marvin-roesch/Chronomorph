@@ -83,6 +83,9 @@ class ChronomorphConfigurable : Configurable {
 
         dayThemeComboBox.renderer = ChronoEntryEditor.ThemeComboBoxRenderer()
         nightThemeComboBox.renderer = ChronoEntryEditor.ThemeComboBoxRenderer()
+
+        dayThemeComboBox.addItem(null)
+        nightThemeComboBox.addItem(null)
         val themes = LafManager.getInstance().installedLookAndFeels
         for (theme in themes) {
             dayThemeComboBox.addItem(theme)
@@ -91,6 +94,9 @@ class ChronomorphConfigurable : Configurable {
 
         dayColorSchemeComboBox.renderer = ChronoEntryEditor.ColorSchemeComboBoxRenderer()
         nightColorSchemeComboBox.renderer = ChronoEntryEditor.ColorSchemeComboBoxRenderer()
+
+        dayColorSchemeComboBox.addItem(null)
+        nightColorSchemeComboBox.addItem(null)
         val colorSchemes = EditorColorsManager.getInstance().allSchemes
         for (scheme in colorSchemes) {
             dayColorSchemeComboBox.addItem(scheme)
@@ -194,7 +200,7 @@ val UIManager.LookAndFeelInfo?.userDescription: String
     get() = this?.name ?: "Leave unchanged"
 
 val EditorColorsScheme?.userDescription: String
-    get() = this?.let { StringUtil.trimStart(it.name, SchemeManager.EDITABLE_COPY_PREFIX) } ?: "Leave unchanged"
+    get() = this?.let { StringUtil.trimStart(it.name, SchemeManager.EDITABLE_COPY_PREFIX) } ?: "Use theme default"
 
 val <T> JComboBox<T>.value: T?
     get() = this.selectedItem as T?

@@ -40,13 +40,11 @@ class ChronomorphSettings : PersistentStateComponent<Element> {
         element.addContent(location)
 
         val dayEntry = writeEntry(daySettings).setName("daySettings")
-        dayEntry.removeAttribute("hour")
-        dayEntry.removeAttribute("minute")
+        dayEntry.removeAttribute("time")
         element.addContent(dayEntry)
 
         val nightEntry = writeEntry(nightSettings).setName("nightSettings")
-        nightEntry.removeAttribute("hour")
-        nightEntry.removeAttribute("minute")
+        nightEntry.removeAttribute("time")
         element.addContent(nightEntry)
 
         val entries = Element("option")
