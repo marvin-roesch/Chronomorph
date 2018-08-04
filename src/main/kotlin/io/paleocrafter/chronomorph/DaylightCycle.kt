@@ -9,6 +9,7 @@
 package io.paleocrafter.chronomorph
 
 import com.google.gson.JsonParser
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.util.io.HttpRequests
 import java.net.HttpURLConnection
@@ -18,6 +19,9 @@ import java.time.ZoneId
 import java.time.ZonedDateTime
 import java.time.format.DateTimeFormatter
 import java.time.temporal.ChronoUnit
+import java.util.concurrent.CompletableFuture
+import java.util.concurrent.ExecutionException
+import java.util.concurrent.Future
 
 object DaylightCycle {
     private val LOG = Logger.getInstance("Chronomorph Daylight Cycle")
@@ -25,44 +29,64 @@ object DaylightCycle {
 
     private val cache = mutableMapOf<CacheKey, Cycle>()
 
-    fun getCycle(): Cycle? {
+    fun getCycle(): CompletableFuture<Cycle?> {
         val settings = ChronomorphSettings.instance
         return getCycle(settings.latitude, settings.longitude)
     }
 
-    fun getCycle(latitude: String, longitude: String): Cycle? {
+    fun getCycle(latitude: String, longitude: String): CompletableFuture<Cycle?> {
         val date = LocalDate.now()
         val cacheKey = CacheKey(latitude, longitude, date)
+        val cached = getCacheValue(cacheKey, false)?.let { CompletableFuture.completedFuture(it) }
+        return cached ?: wrapFuture(
+            ApplicationManager.getApplication().executeOnPooledThread<Cycle?> {
+                getCycleSync(cacheKey)
+            }
+        )
+    }
+
+    private fun getCycleSync(cacheKey: CacheKey): Cycle? {
         try {
-            return getCacheValue(cacheKey, false)
-                ?: HttpRequests.request("https://api.sunrise-sunset.org/json?lat=$latitude&lng=$longitude&formatted=0")
-                    .accept("application/json")
-                    .connect {
-                        val pastValue = getCacheValue(cacheKey, true)
-                        val connection = it.connection as? HttpURLConnection ?: return@connect pastValue
-                        if (connection.responseCode != 200 || !connection.contentType.startsWith("application/json")) {
-                            return@connect pastValue
-                        }
-                        val text = it.readString()
-                        val json = JsonParser().parse(text).asJsonObject
-                        if (json.get("status").asString.toLowerCase() != "ok") {
-                            return@connect pastValue
-                        }
-                        val sunriseText = json.getAsJsonObject("results").get("sunrise").asString
-                        val sunsetText = json.getAsJsonObject("results").get("sunset").asString
-                        val sunrise = ZonedDateTime.parse(sunriseText, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-                            .withZoneSameInstant(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES)
-                        val sunset = ZonedDateTime.parse(sunsetText, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
-                            .withZoneSameInstant(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES)
-                        val cycle = Cycle(sunrise, sunset)
-                        cache[cacheKey] = cycle
-                        return@connect cycle
+            return HttpRequests.request("https://api.sunrise-sunset.org/json?lat=${cacheKey.latitude}&lng=${cacheKey.longitude}&formatted=0")
+                .accept("application/json")
+                .connect {
+                    val pastValue = getCacheValue(cacheKey, true)
+                    val connection = it.connection as? HttpURLConnection ?: return@connect pastValue
+                    if (connection.responseCode != 200 || !connection.contentType.startsWith("application/json")) {
+                        return@connect pastValue
                     }
+                    val text = it.readString()
+                    val json = JsonParser().parse(text).asJsonObject
+                    if (json.get("status").asString.toLowerCase() != "ok") {
+                        return@connect pastValue
+                    }
+                    val sunriseText = json.getAsJsonObject("results").get("sunrise").asString
+                    val sunsetText = json.getAsJsonObject("results").get("sunset").asString
+                    val sunrise = ZonedDateTime.parse(sunriseText, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES)
+                    val sunset = ZonedDateTime.parse(sunsetText, DateTimeFormatter.ISO_OFFSET_DATE_TIME)
+                        .withZoneSameInstant(ZoneId.systemDefault()).toLocalTime().truncatedTo(ChronoUnit.MINUTES)
+                    val cycle = Cycle(sunrise, sunset)
+                    cache[cacheKey] = cycle
+                    return@connect cycle
+                }
         } catch (e: Exception) {
-            LOG.error("Failed to retrieve daylight cycle data at $latitude, $longitude on $date!", e)
+            LOG.error("Failed to retrieve daylight cycle data at ${cacheKey.latitude}, ${cacheKey.longitude} on ${cacheKey.date}!", e)
             return getCacheValue(cacheKey, true)
         }
     }
+
+    private fun wrapFuture(future: Future<Cycle?>): CompletableFuture<Cycle?> =
+        CompletableFuture.supplyAsync {
+            try {
+                future.get()
+            } catch (exception: Exception) {
+                when (exception) {
+                    is InterruptedException, is ExecutionException -> null
+                    else -> throw exception
+                }
+            }
+        }
 
     private fun getCacheValue(cacheKey: CacheKey, allowPast: Boolean): Cycle? {
         if (!cache.containsKey(cacheKey)) {

@@ -9,6 +9,7 @@
 package io.paleocrafter.chronomorph.config
 
 import com.intellij.ide.ui.LafManager
+import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.options.Configurable
@@ -19,10 +20,12 @@ import com.intellij.ui.ToolbarDecorator
 import io.paleocrafter.chronomorph.Chronomorph
 import io.paleocrafter.chronomorph.ChronomorphSettings
 import io.paleocrafter.chronomorph.DaylightCycle
+import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
+import java.util.concurrent.CompletableFuture
 import javax.swing.JCheckBox
 import javax.swing.JComboBox
 import javax.swing.JComponent
@@ -47,6 +50,8 @@ class ChronomorphConfigurable : Configurable {
     private lateinit var sunsetLabel: JLabel
     private lateinit var entryTable: ChronoEntryTable
     private lateinit var entryPanel: JPanel
+
+    private var cycleFuture: CompletableFuture<DaylightCycle.Cycle?>? = null
 
     @Nls
     override fun getDisplayName() = "Chronomorph"
@@ -142,7 +147,7 @@ class ChronomorphConfigurable : Configurable {
 
         val listener = object : DocumentAdapter() {
             override fun textChanged(e: DocumentEvent?) {
-                updateDaylightCycle(latitudeField.value.toString(), longitudeField.value.toString())
+                updateDaylightCycle(latitudeField.text, longitudeField.text)
             }
         }
 
@@ -151,9 +156,18 @@ class ChronomorphConfigurable : Configurable {
     }
 
     private fun updateDaylightCycle(latitude: String, longitude: String) {
-        val cycle = DaylightCycle.getCycle(latitude, longitude) ?: DaylightCycle.DEFAULT
-        sunriseLabel.text = cycle.sunrise.format(DateTimeFormatter.ISO_LOCAL_TIME)
-        sunsetLabel.text = cycle.sunset.format(DateTimeFormatter.ISO_LOCAL_TIME)
+        if (latitude.isEmpty() || longitude.isEmpty()) {
+            return
+        }
+        cycleFuture?.cancel(true)
+        cycleFuture = DaylightCycle.getCycle(latitude, longitude)
+        cycleFuture?.whenComplete { c, _ ->
+            val cycle = c ?: DaylightCycle.DEFAULT
+            ApplicationManager.getApplication().invokeAndWait {
+                sunriseLabel.text = cycle.sunrise.format(DateTimeFormatter.ISO_LOCAL_TIME)
+                sunsetLabel.text = cycle.sunset.format(DateTimeFormatter.ISO_LOCAL_TIME)
+            }
+        }
     }
 
     override fun isModified(): Boolean {

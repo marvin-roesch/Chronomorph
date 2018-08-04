@@ -22,7 +22,7 @@
       <div>
         Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!
         <p>
-        v. 2018.2-0.0.1
+        v. 2018.2-0.1.0
       </div>
     ]]>
     </change-notes>
@@ -48,11 +48,5 @@
     </application-components>
 
     <actions>
-        <!--<action class="com.demonwav.mcdev.insight.generation.GenerateEventListenerAction"-->
-                <!--id="GenerateEventListener"-->
-                <!--text="Event Listener"-->
-                <!--description="Generates a new Event Listener for the appropriate platform">-->
-            <!--<add-to-group group-id="GenerateGroup" anchor="last"/>-->
-        <!--</action>-->
     </actions>
 </idea-plugin>
