@@ -37,22 +37,14 @@ class ChronoEntryEditor(title: String, entry: ChronomorphSettings.ChronoEntry?) 
         hourSpinner.model = SpinnerNumberModel(0, 0, 23, 1)
         minuteSpinner.model = SpinnerNumberModel(0, 0, 59, 1)
 
-        themeComboBox.renderer = object : ListCellRendererWrapper<UIManager.LookAndFeelInfo>() {
-            override fun customize(list: JList<*>?, value: UIManager.LookAndFeelInfo?, index: Int, selected: Boolean, hasFocus: Boolean) {
-                setText(value.userDescription)
-            }
-        }
+        themeComboBox.renderer = ThemeComboBoxRenderer()
         themeComboBox.addItem(null)
         val themes = LafManager.getInstance().installedLookAndFeels
         for (theme in themes) {
             themeComboBox.addItem(theme)
         }
 
-        colorSchemeComboBox.renderer = object : ListCellRendererWrapper<EditorColorsScheme>() {
-            override fun customize(list: JList<*>?, value: EditorColorsScheme?, index: Int, selected: Boolean, hasFocus: Boolean) {
-                setText(value.userDescription)
-            }
-        }
+        colorSchemeComboBox.renderer = ColorSchemeComboBoxRenderer()
         colorSchemeComboBox.addItem(null)
         val colorSchemes = EditorColorsManager.getInstance().allSchemes
         for (scheme in colorSchemes) {
@@ -75,8 +67,8 @@ class ChronoEntryEditor(title: String, entry: ChronomorphSettings.ChronoEntry?) 
     val entry: ChronomorphSettings.ChronoEntry
         get() = ChronomorphSettings.ChronoEntry(
             LocalTime.of(hourSpinner.value as Int, minuteSpinner.value as Int),
-            (themeComboBox.selectedItem as? UIManager.LookAndFeelInfo)?.className,
-            (colorSchemeComboBox.selectedItem as? EditorColorsScheme)?.name
+            themeComboBox.value?.className,
+            colorSchemeComboBox.value?.name
         )
 
     override fun getPreferredFocusedComponent() = hourSpinner
@@ -86,4 +78,16 @@ class ChronoEntryEditor(title: String, entry: ChronomorphSettings.ChronoEntry?) 
     override fun createNorthPanel() = panel
 
     override fun createCenterPanel(): JComponent? = null
+
+    class ThemeComboBoxRenderer : ListCellRendererWrapper<UIManager.LookAndFeelInfo>() {
+        override fun customize(list: JList<*>?, value: UIManager.LookAndFeelInfo?, index: Int, selected: Boolean, hasFocus: Boolean) {
+            setText(value.userDescription)
+        }
+    }
+
+    class ColorSchemeComboBoxRenderer : ListCellRendererWrapper<EditorColorsScheme>() {
+        override fun customize(list: JList<*>?, value: EditorColorsScheme?, index: Int, selected: Boolean, hasFocus: Boolean) {
+            setText(value.userDescription)
+        }
+    }
 }

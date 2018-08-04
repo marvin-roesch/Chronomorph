@@ -16,6 +16,7 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.util.addOptionTag
+import com.intellij.util.get
 import org.jdom.Element
 import java.time.LocalTime
 import javax.swing.UIManager
@@ -23,37 +24,69 @@ import javax.swing.UIManager
 @State(name = "ChronomorphSettings", storages = [(Storage("chronomorph.xml"))])
 class ChronomorphSettings : PersistentStateComponent<Element> {
     var useDayCycle = false
+    var daySettings: ChronoEntry = ChronoEntry(LocalTime.NOON, null, null)
+    var nightSettings: ChronoEntry = ChronoEntry(LocalTime.MIDNIGHT, null, null)
+    var latitude: String = "0"
+    var longitude: String = "0"
     val chronoEntries = mutableListOf<ChronoEntry>()
 
     override fun getState(): Element {
         val element = Element("ChronomorphSettingsState")
         element.addOptionTag("useDayCycle", useDayCycle.toString())
+
+        val location = Element("location")
+        location.setAttribute("latitude", latitude)
+        location.setAttribute("longitude", longitude)
+        element.addContent(location)
+
+        val dayEntry = writeEntry(daySettings).setName("daySettings")
+        dayEntry.removeAttribute("hour")
+        dayEntry.removeAttribute("minute")
+        element.addContent(dayEntry)
+
+        val nightEntry = writeEntry(nightSettings).setName("nightSettings")
+        nightEntry.removeAttribute("hour")
+        nightEntry.removeAttribute("minute")
+        element.addContent(nightEntry)
+
         val entries = Element("option")
         entries.setAttribute("name", "chronoEntries")
         chronoEntries.map(::writeEntry).forEach { entries.addContent(it) }
         element.addContent(entries)
+
         return element
     }
 
     override fun loadState(state: Element) {
         this.useDayCycle = state.getOption("useDayCycle")?.getAttribute("value")?.booleanValue ?: false
+        state.get("location")?.also {
+            this.latitude = it.getAttributeValue("latitude")
+            this.longitude = it.getAttributeValue("longitude")
+        }
+        state.get("daySettings")?.also {
+            this.daySettings = readEntry(it, LocalTime.NOON)
+        }
+        state.get("nightSettings")?.also {
+            this.nightSettings = readEntry(it, LocalTime.MIDNIGHT)
+        }
         chronoEntries.clear()
         state.getOption("chronoEntries")?.children?.also { entries ->
-            chronoEntries.addAll(entries.filter { it.name == "entry" }.map(::readEntry))
+            chronoEntries.addAll(entries.filter { it.name == "entry" }.map { readEntry(it) })
         }
     }
 
     private fun Element.getOption(name: String) =
         this.children.find { it.name == "option" && it.getAttribute("name").value == name }
 
-    private fun readEntry(element: Element): ChronoEntry {
-        val time = element.getAttributeValue("time").split(':', limit = 2)
-        val hour = time.getOrNull(0)?.toInt() ?: 0
-        val minute = time.getOrNull(1)?.toInt() ?: 0
+    private fun readEntry(element: Element, defaultTime: LocalTime? = null): ChronoEntry {
+        val time = element.getAttributeValue("time")?.split(':', limit = 2)
+        val hour = time?.getOrNull(0)?.toInt() ?: defaultTime?.hour ?: 0
+        val minute = time?.getOrNull(1)?.toInt() ?: defaultTime?.minute ?: 0
         return ChronoEntry(
             LocalTime.of(hour, minute),
             element.getAttributeValue("theme"),
-            element.getAttributeValue("colorScheme"))
+            element.getAttributeValue("colorScheme")
+        )
     }
 
     private fun writeEntry(entry: ChronoEntry): Element {

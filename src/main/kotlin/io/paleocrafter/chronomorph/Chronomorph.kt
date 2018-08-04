@@ -26,7 +26,7 @@ class Chronomorph : ApplicationComponent {
     override fun initComponent() {
         super.initComponent()
         val now = LocalTime.now()
-        getClosestEntry(now)?.also { applyEntry(it, firstRun = true) }
+        check(now, firstRun = true)
         timer = JobScheduler.getScheduler().scheduleWithFixedDelay(
             ::check,
             now.until(now.plusMinutes(1).truncatedTo(ChronoUnit.MINUTES), ChronoUnit.MILLIS),
@@ -35,14 +35,24 @@ class Chronomorph : ApplicationComponent {
         )
     }
 
-    fun check() {
-        val now = LocalTime.now()
-        getClosestEntry(now)?.also { applyEntry(it) }
-    }
-
     override fun disposeComponent() {
         super.disposeComponent()
         timer.cancel(true)
+    }
+
+    fun check() {
+        check(LocalTime.now(), false)
+    }
+
+    private fun check(time: LocalTime, firstRun: Boolean) {
+        val settings = ChronomorphSettings.instance
+        if (!settings.useDayCycle) {
+            getClosestEntry(time)?.also { applyEntry(it, firstRun) }
+            return
+        }
+        val cycle = DaylightCycle.getCycle() ?: DaylightCycle.DEFAULT
+        val entry = if (time in cycle.sunrise..cycle.sunset) settings.daySettings else settings.nightSettings
+        applyEntry(entry, firstRun)
     }
 
     fun getClosestEntry(time: LocalTime): ChronomorphSettings.ChronoEntry? {
