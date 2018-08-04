@@ -1,0 +1,58 @@
+<!--
+    Chronomorph for IntelliJ
+
+    Copyright (c) 2018 PaleoCrafter
+
+    MIT License
+-->
+
+<idea-plugin>
+
+    <depends>com.intellij.modules.lang</depends>
+
+    <id>io.paleocrafter.chronomorph</id>
+    <name>Chronomorph</name>
+    <vendor email="marvinroesch99@gmail.com">PaleoCrafter</vendor>
+
+    <description><![CDATA[
+      Automatically switches the IDE theme and color scheme base don the time of day.
+    ]]></description>
+
+    <change-notes><![CDATA[
+      <div>
+        Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!
+        <p>
+        v. 2018.2-0.0.1
+      </div>
+    ]]>
+    </change-notes>
+
+    <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
+    <idea-version since-build="162" until-build="182.*"/>
+
+    <extensions defaultExtensionNs="com.intellij">
+
+        <applicationConfigurable displayName="Chronomorph"
+                                 id="Settings.Chronomorph"
+                                 groupId="appearance"
+                                 parentId="preferences.lookFeel"
+                                 instance="io.paleocrafter.chronomorph.config.ChronomorphConfigurable"/>
+        <applicationService serviceImplementation="io.paleocrafter.chronomorph.ChronomorphSettings"/>
+
+    </extensions>
+
+    <application-components>
+        <component>
+            <implementation-class>io.paleocrafter.chronomorph.Chronomorph</implementation-class>
+        </component>
+    </application-components>
+
+    <actions>
+        <!--<action class="com.demonwav.mcdev.insight.generation.GenerateEventListenerAction"-->
+                <!--id="GenerateEventListener"-->
+                <!--text="Event Listener"-->
+                <!--description="Generates a new Event Listener for the appropriate platform">-->
+            <!--<add-to-group group-id="GenerateGroup" anchor="last"/>-->
+        <!--</action>-->
+    </actions>
+</idea-plugin>
