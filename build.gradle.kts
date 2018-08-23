@@ -61,6 +61,7 @@ dependencies {
     "kotlin"(kotlin("stdlib")) { isTransitive = false }
     compile(kotlin("stdlib-jdk7")) { isTransitive = false }
     compile(kotlin("stdlib-jdk8")) { isTransitive = false }
+//    compile("org.openstreetmap.jmapviewer:jmapviewer:2.0")
 
     // Add tools.jar for the JDI API
     compile(files(Jvm.current().toolsJar))
@@ -77,7 +78,7 @@ intellij {
         "properties", "junit")
 
     pluginName = "Chronomorph"
-    updateSinceUntilBuild = true
+    updateSinceUntilBuild = false
 
     downloadSources = !CI && downloadIdeaSources.toBoolean()
 
