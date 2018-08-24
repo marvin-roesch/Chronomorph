@@ -23,6 +23,7 @@ import io.paleocrafter.chronomorph.DaylightCycle
 import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
+import java.awt.Dimension
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
@@ -65,6 +66,7 @@ class ChronomorphConfigurable : Configurable {
                 .setAddAction { entryTable.addEntry() }
                 .setRemoveAction { entryTable.removeEntry() }
                 .setEditAction { entryTable.editEntry() }
+                .setPreferredSize(Dimension(100, 100))
                 .disableUpDownActions().createPanel(),
             BorderLayout.CENTER)
         return panel
