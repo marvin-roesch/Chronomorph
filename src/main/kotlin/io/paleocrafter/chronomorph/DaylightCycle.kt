@@ -37,12 +37,18 @@ object DaylightCycle {
     fun getCycle(latitude: String, longitude: String): CompletableFuture<Cycle?> {
         val date = LocalDate.now()
         val cacheKey = CacheKey(latitude, longitude, date)
+        val settings = ChronomorphSettings.instance
         val cached = getCacheValue(cacheKey, false)?.let { CompletableFuture.completedFuture(it) }
-        return cached ?: wrapFuture(
-            ApplicationManager.getApplication().executeOnPooledThread<Cycle?> {
-                getCycleSync(cacheKey)
-            }
-        )
+        return if(settings.useDayCycle) {
+            cached ?: wrapFuture(
+                    ApplicationManager.getApplication().executeOnPooledThread<Cycle?> {
+                        getCycleSync(cacheKey)
+                    })
+        }else
+            cached ?: wrapFuture(ApplicationManager.getApplication().executeOnPooledThread<Cycle?>{
+                DEFAULT
+            })
+
     }
 
     private fun getCycleSync(cacheKey: CacheKey): Cycle? {

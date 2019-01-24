@@ -28,7 +28,7 @@
     </change-notes>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="162" until-build="182.*"/>
+    <idea-version since-build="162" until-build="183.*"/>
 
     <extensions defaultExtensionNs="com.intellij">
 
