@@ -16,7 +16,6 @@ import com.intellij.openapi.components.Storage
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.util.addOptionTag
-import com.intellij.util.get
 import org.jdom.Element
 import java.time.LocalTime
 import javax.swing.UIManager
@@ -57,14 +56,15 @@ class ChronomorphSettings : PersistentStateComponent<Element> {
 
     override fun loadState(state: Element) {
         this.useDayCycle = state.getOption("useDayCycle")?.getAttribute("value")?.booleanValue ?: false
-        state.get("location")?.also {
+
+        state.getOption("location")?.also {
             this.latitude = it.getAttributeValue("latitude")
             this.longitude = it.getAttributeValue("longitude")
         }
-        state.get("daySettings")?.also {
+        state.getOption("daySettings")?.also {
             this.daySettings = readEntry(it, LocalTime.NOON)
         }
-        state.get("nightSettings")?.also {
+        state.getOption("nightSettings")?.also {
             this.nightSettings = readEntry(it, LocalTime.MIDNIGHT)
         }
         chronoEntries.clear()

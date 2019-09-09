@@ -20,20 +20,13 @@ import com.intellij.ui.ToolbarDecorator
 import io.paleocrafter.chronomorph.Chronomorph
 import io.paleocrafter.chronomorph.ChronomorphSettings
 import io.paleocrafter.chronomorph.DaylightCycle
-import org.bouncycastle.asn1.x500.style.RFC4519Style.c
 import org.jetbrains.annotations.Nls
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.text.DecimalFormat
 import java.time.format.DateTimeFormatter
 import java.util.concurrent.CompletableFuture
-import javax.swing.JCheckBox
-import javax.swing.JComboBox
-import javax.swing.JComponent
-import javax.swing.JFormattedTextField
-import javax.swing.JLabel
-import javax.swing.JPanel
-import javax.swing.UIManager
+import javax.swing.*
 import javax.swing.event.DocumentEvent
 import javax.swing.text.DefaultFormatterFactory
 import javax.swing.text.NumberFormatter
@@ -148,7 +141,7 @@ class ChronomorphConfigurable : Configurable {
         }
 
         val listener = object : DocumentAdapter() {
-            override fun textChanged(e: DocumentEvent?) {
+            override fun textChanged(e: DocumentEvent) {
                 updateDaylightCycle(latitudeField.text, longitudeField.text)
             }
         }
