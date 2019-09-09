@@ -1,7 +1,7 @@
 <!--
     Chronomorph for IntelliJ
 
-    Copyright (c) 2018 PaleoCrafter
+    Copyright (c) 2018-2019 PaleoCrafter
 
     MIT License
 -->
@@ -22,13 +22,13 @@
       <div>
         Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!
         <p>
-        v. 2018.2-0.1.1
+        v. 2019.2-0.2.0
       </div>
     ]]>
     </change-notes>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="162" until-build="183.*"/>
+    <idea-version since-build="162"/>
 
     <extensions defaultExtensionNs="com.intellij">
 

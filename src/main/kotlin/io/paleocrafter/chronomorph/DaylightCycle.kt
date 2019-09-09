@@ -1,7 +1,7 @@
 /*
  * Chronomorph for IntelliJ
  *
- * Copyright (c) 2018 PaleoCrafter
+ * Copyright (c) 2018-2019 PaleoCrafter
  *
  * MIT License
  */
