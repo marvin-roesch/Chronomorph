@@ -11,8 +11,8 @@ package io.paleocrafter.chronomorph
 import com.intellij.concurrency.JobScheduler
 import com.intellij.ide.actions.QuickChangeLookAndFeel
 import com.intellij.ide.ui.LafManager
+import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
-import com.intellij.openapi.components.ApplicationComponent
 import com.intellij.openapi.editor.EditorFactory
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import java.time.LocalTime
@@ -20,11 +20,10 @@ import java.time.temporal.ChronoUnit
 import java.util.concurrent.ScheduledFuture
 import java.util.concurrent.TimeUnit
 
-class Chronomorph : ApplicationComponent {
-    private lateinit var timer: ScheduledFuture<*>
+class Chronomorph : Disposable {
+    private val timer: ScheduledFuture<*>
 
-    override fun initComponent() {
-        super.initComponent()
+    init {
         val now = LocalTime.now()
         check(now, firstRun = true)
         timer = JobScheduler.getScheduler().scheduleWithFixedDelay(
@@ -35,8 +34,7 @@ class Chronomorph : ApplicationComponent {
         )
     }
 
-    override fun disposeComponent() {
-        super.disposeComponent()
+    override fun dispose() {
         timer.cancel(true)
     }
 

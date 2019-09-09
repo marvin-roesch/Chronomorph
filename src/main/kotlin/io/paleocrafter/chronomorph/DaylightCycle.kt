@@ -55,6 +55,7 @@ object DaylightCycle {
         try {
             return HttpRequests.request("https://api.sunrise-sunset.org/json?lat=${cacheKey.latitude}&lng=${cacheKey.longitude}&formatted=0")
                 .accept("application/json")
+                .throwStatusCodeException(false)
                 .connect {
                     val pastValue = getCacheValue(cacheKey, true)
                     val connection = it.connection as? HttpURLConnection ?: return@connect pastValue

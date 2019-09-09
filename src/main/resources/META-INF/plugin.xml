@@ -34,7 +34,6 @@
 
         <applicationConfigurable displayName="Chronomorph"
                                  id="Settings.Chronomorph"
-                                 groupId="appearance"
                                  parentId="preferences.lookFeel"
                                  instance="io.paleocrafter.chronomorph.config.ChronomorphConfigurable"/>
         <applicationService serviceImplementation="io.paleocrafter.chronomorph.ChronomorphSettings"/>
