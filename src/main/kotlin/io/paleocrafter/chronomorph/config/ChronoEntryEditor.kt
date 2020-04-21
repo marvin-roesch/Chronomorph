@@ -12,7 +12,7 @@ import com.intellij.ide.ui.LafManager
 import com.intellij.openapi.editor.colors.EditorColorsManager
 import com.intellij.openapi.editor.colors.EditorColorsScheme
 import com.intellij.openapi.ui.DialogWrapper
-import com.intellij.ui.SimpleListCellRenderer
+import com.intellij.ui.ListCellRendererWrapper
 import io.paleocrafter.chronomorph.ChronomorphSettings
 import java.time.LocalTime
 import javax.swing.JComboBox
@@ -77,15 +77,15 @@ class ChronoEntryEditor(title: String, entry: ChronomorphSettings.ChronoEntry?) 
 
     override fun createCenterPanel(): JComponent? = null
 
-    class ThemeComboBoxRenderer : SimpleListCellRenderer<UIManager.LookAndFeelInfo>() {
-        override fun customize(list: JList<out UIManager.LookAndFeelInfo>, value: UIManager.LookAndFeelInfo?, index: Int, selected: Boolean, hasFocus: Boolean) {
-            text = value.userDescription
+    class ThemeComboBoxRenderer : ListCellRendererWrapper<UIManager.LookAndFeelInfo>() {
+        override fun customize(list: JList<*>?, value: UIManager.LookAndFeelInfo?, index: Int, selected: Boolean, hasFocus: Boolean) {
+            setText(value.userDescription)
         }
     }
 
-    class ColorSchemeComboBoxRenderer : SimpleListCellRenderer<EditorColorsScheme>() {
-        override fun customize(list: JList<out EditorColorsScheme>, value: EditorColorsScheme?, index: Int, selected: Boolean, hasFocus: Boolean) {
-            text = value.userDescription
+    class ColorSchemeComboBoxRenderer : ListCellRendererWrapper<EditorColorsScheme>() {
+        override fun customize(list: JList<*>?, value: EditorColorsScheme?, index: Int, selected: Boolean, hasFocus: Boolean) {
+            setText(value.userDescription)
         }
     }
 }

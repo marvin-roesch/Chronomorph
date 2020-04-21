@@ -63,7 +63,7 @@ object DaylightCycle {
                         return@connect pastValue
                     }
                     val text = it.readString()
-                    val json = JsonParser.parseString(text).asJsonObject
+                    val json = JsonParser().parse(text).asJsonObject
                     if (json.get("status").asString.toLowerCase() != "ok") {
                         return@connect pastValue
                     }
