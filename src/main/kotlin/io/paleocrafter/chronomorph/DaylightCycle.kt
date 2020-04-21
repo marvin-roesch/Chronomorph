@@ -1,7 +1,7 @@
 /*
  * Chronomorph for IntelliJ
  *
- * Copyright (c) 2018-2019 PaleoCrafter
+ * Copyright (c) 2018-2020 PaleoCrafter
  *
  * MIT License
  */
@@ -59,11 +59,11 @@ object DaylightCycle {
                 .connect {
                     val pastValue = getCacheValue(cacheKey, true)
                     val connection = it.connection as? HttpURLConnection ?: return@connect pastValue
-                    if (connection.responseCode != 200 || !connection.contentType.startsWith("application/json")) {
+                    if (connection.responseCode != HttpURLConnection.HTTP_OK || !connection.contentType.startsWith("application/json")) {
                         return@connect pastValue
                     }
                     val text = it.readString()
-                    val json = JsonParser().parse(text).asJsonObject
+                    val json = JsonParser.parseString(text).asJsonObject
                     if (json.get("status").asString.toLowerCase() != "ok") {
                         return@connect pastValue
                     }

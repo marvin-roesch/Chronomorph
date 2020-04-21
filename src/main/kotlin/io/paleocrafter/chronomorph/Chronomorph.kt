@@ -1,7 +1,7 @@
 /*
  * Chronomorph for IntelliJ
  *
- * Copyright (c) 2018-2019 PaleoCrafter
+ * Copyright (c) 2018-2020 PaleoCrafter
  *
  * MIT License
  */
@@ -55,7 +55,7 @@ class Chronomorph : Disposable {
         }
     }
 
-    fun getClosestEntry(time: LocalTime): ChronomorphSettings.ChronoEntry? {
+    private fun getClosestEntry(time: LocalTime): ChronomorphSettings.ChronoEntry? {
         val entries = completeEntries(ChronomorphSettings.instance.chronoEntries)
         if (entries.isEmpty()) {
             return null
@@ -102,7 +102,7 @@ class Chronomorph : Disposable {
         }
     }
 
-    fun completeEntries(entries: List<ChronomorphSettings.ChronoEntry>): List<ChronomorphSettings.ChronoEntry> {
+    private fun completeEntries(entries: List<ChronomorphSettings.ChronoEntry>): List<ChronomorphSettings.ChronoEntry> {
         if (entries.isEmpty()) {
             return emptyList()
         }

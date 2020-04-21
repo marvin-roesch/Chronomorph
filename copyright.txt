@@ -1,5 +1,5 @@
 Chronomorph for IntelliJ
 
-Copyright (c) 2018-2019 PaleoCrafter
+Copyright (c) 2018-2020 PaleoCrafter
 
 MIT License

@@ -1,7 +1,7 @@
 /*
  * Chronomorph for IntelliJ
  *
- * Copyright (c) 2018-2019 PaleoCrafter
+ * Copyright (c) 2018-2020 PaleoCrafter
  *
  * MIT License
  */
@@ -209,7 +209,7 @@ val UIManager.LookAndFeelInfo?.userDescription: String
     get() = this?.name ?: "Leave unchanged"
 
 val EditorColorsScheme?.userDescription: String
-    get() = this?.let { StringUtil.trimStart(it.name, SchemeManager.EDITABLE_COPY_PREFIX) } ?: "Use theme default"
+    get() = this?.let { StringUtil.trimStart(it.name, "_@user_") } ?: "Use theme default"
 
 val <T> JComboBox<T>.value: T?
     get() = this.selectedItem as T?

@@ -1,7 +1,7 @@
 <!--
     Chronomorph for IntelliJ
 
-    Copyright (c) 2018-2019 PaleoCrafter
+    Copyright (c) 2018-2020 PaleoCrafter
 
     MIT License
 -->
@@ -20,15 +20,15 @@
 
     <change-notes><![CDATA[
       <div>
-        Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!
+        Version 2020.1-1.0.0 introduced a change to the way configurations are stored. You'll unfortunately have to reconfigure the plugin!
         <p>
-        v. 2019.2-0.2.0
+        Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!
       </div>
     ]]>
     </change-notes>
 
     <!-- please see https://confluence.jetbrains.com/display/IDEADEV/Build+Number+Ranges for description -->
-    <idea-version since-build="162"/>
+    <idea-version since-build="183.2153.8"/>
 
     <extensions defaultExtensionNs="com.intellij">
 
