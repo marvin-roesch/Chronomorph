@@ -99,7 +99,7 @@ class ChronomorphSettings : PersistentStateComponent<Element> {
 
     data class ChronoEntry(val time: LocalTime, val theme: String?, val colorScheme: String?) {
         val themeInfo: UIManager.LookAndFeelInfo?
-            get() = LafManager.getInstance().installedLookAndFeels.find { it.className == theme }
+            get() = LafManager.getInstance().installedLookAndFeels.find { it.name == theme }
         val colorSchemeInfo: EditorColorsScheme?
             get() = EditorColorsManager.getInstance().allSchemes.find { it.name == colorScheme }
     }

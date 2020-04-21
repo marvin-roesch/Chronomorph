@@ -171,9 +171,9 @@ class ChronomorphConfigurable : Configurable {
         return useDayCycleCheckBox.isSelected != settings.useDayCycle
             || latitudeField.text != settings.latitude
             || longitudeField.text != settings.longitude
-            || dayThemeComboBox.value?.className != settings.daySettings.theme
+            || dayThemeComboBox.value?.name != settings.daySettings.theme
             || dayColorSchemeComboBox.value?.name != settings.daySettings.colorScheme
-            || nightThemeComboBox.value?.className != settings.nightSettings.theme
+            || nightThemeComboBox.value?.name != settings.nightSettings.theme
             || nightColorSchemeComboBox.value?.name != settings.nightSettings.colorScheme
             || entryTable.entries != settings.chronoEntries
     }
@@ -187,11 +187,11 @@ class ChronomorphConfigurable : Configurable {
         settings.longitude = longitudeField.text
 
         settings.daySettings = settings.daySettings.copy(
-            theme = dayThemeComboBox.value?.className,
+            theme = dayThemeComboBox.value?.name,
             colorScheme = dayColorSchemeComboBox.value?.name
         )
         settings.nightSettings = settings.nightSettings.copy(
-            theme = nightThemeComboBox.value?.className,
+            theme = nightThemeComboBox.value?.name,
             colorScheme = nightColorSchemeComboBox.value?.name
         )
 

@@ -65,7 +65,7 @@ class ChronoEntryEditor(title: String, entry: ChronomorphSettings.ChronoEntry?) 
     val entry: ChronomorphSettings.ChronoEntry
         get() = ChronomorphSettings.ChronoEntry(
             LocalTime.of(hourSpinner.value as Int, minuteSpinner.value as Int),
-            themeComboBox.value?.className,
+            themeComboBox.value?.name,
             colorSchemeComboBox.value?.name
         )
 
