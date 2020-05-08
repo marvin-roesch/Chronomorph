@@ -74,7 +74,7 @@ class ChronomorphSettings : PersistentStateComponent<Element> {
     }
 
     private fun Element.getOption(name: String) =
-        this.children.find { it.name == "option" && it.getAttribute("name").value == name }
+        this.children.find { it.name == name || (it.name == "option" && it.getAttribute("name").value == name) }
 
     private fun readEntry(element: Element, defaultTime: LocalTime? = null): ChronoEntry {
         val time = element.getAttributeValue("time")?.split(':', limit = 2)
