@@ -20,6 +20,8 @@
 
     <change-notes><![CDATA[
       <div>
+        Version 2020.1-1.0.2 introduced a new, more reliable way of calculating daylight cycles. The plugin now works independently of an internet connection.
+        <p>
         Version 2020.1-1.0.0 introduced a change to the way configurations are stored. You'll unfortunately have to reconfigure the plugin!
         <p>
         Please report issues to <a href="https://github.com/PaleoCrafter/Chronomorph/issues">the issue tracker</a>!

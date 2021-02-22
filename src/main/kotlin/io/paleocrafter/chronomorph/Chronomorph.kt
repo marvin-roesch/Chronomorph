@@ -48,11 +48,9 @@ class Chronomorph : Disposable {
             getClosestEntry(time)?.also { applyEntry(it, firstRun) }
             return
         }
-        DaylightCycle.getCycle().whenComplete { c, _ ->
-            val cycle = c ?: DaylightCycle.DEFAULT
-            val entry = if (time in cycle.sunrise..cycle.sunset) settings.daySettings else settings.nightSettings
-            applyEntry(entry, firstRun)
-        }
+        val cycle = DaylightCycle.getCycle() ?: DaylightCycle.DEFAULT
+        val entry = if (time in cycle.sunrise..cycle.sunset) settings.daySettings else settings.nightSettings
+        applyEntry(entry, firstRun)
     }
 
     private fun getClosestEntry(time: LocalTime): ChronomorphSettings.ChronoEntry? {

@@ -45,8 +45,6 @@ class ChronomorphConfigurable : Configurable {
     private lateinit var entryTable: ChronoEntryTable
     private lateinit var entryPanel: JPanel
 
-    private var cycleFuture: CompletableFuture<DaylightCycle.Cycle?>? = null
-
     @Nls
     override fun getDisplayName() = "Chronomorph"
 
@@ -154,14 +152,10 @@ class ChronomorphConfigurable : Configurable {
         if (latitude.isEmpty() || longitude.isEmpty()) {
             return
         }
-        cycleFuture?.cancel(true)
-        cycleFuture = DaylightCycle.getCycle(latitude, longitude)
-        cycleFuture?.whenComplete { c, _ ->
-            val cycle = c ?: DaylightCycle.DEFAULT
-            ApplicationManager.getApplication().invokeAndWait {
-                sunriseLabel.text = cycle.sunrise.format(DateTimeFormatter.ISO_LOCAL_TIME)
-                sunsetLabel.text = cycle.sunset.format(DateTimeFormatter.ISO_LOCAL_TIME)
-            }
+        val cycle = DaylightCycle.getCycle(latitude, longitude) ?: DaylightCycle.DEFAULT
+        ApplicationManager.getApplication().invokeAndWait {
+            sunriseLabel.text = cycle.sunrise.format(DateTimeFormatter.ISO_LOCAL_TIME)
+            sunsetLabel.text = cycle.sunset.format(DateTimeFormatter.ISO_LOCAL_TIME)
         }
     }
 

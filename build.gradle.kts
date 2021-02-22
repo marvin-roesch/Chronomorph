@@ -7,7 +7,6 @@
  */
 
 import org.gradle.internal.jvm.Jvm
-import org.jetbrains.intellij.dependency.IdeaDependencyManager.setExecutable
 import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
@@ -18,10 +17,10 @@ buildscript {
 }
 
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.2.30" // kept in sync with IntelliJ's bundled dep
+    id("org.jetbrains.kotlin.jvm") version "1.3.31" // kept in sync with IntelliJ's bundled dep
     groovy
     idea
-    id("org.jetbrains.intellij") version "0.3.5"
+    id("org.jetbrains.intellij") version "0.7.0"
     id("net.minecrell.licenser") version "0.4.1"
 }
 
@@ -40,12 +39,8 @@ val runIde: JavaExec by tasks
 val publishPlugin: PublishTask by tasks
 val clean: Delete by tasks
 
-configurations {
-    "kotlin"()
-    "compileOnly" { extendsFrom("kotlin"()) }
-    "testCompile" { extendsFrom("kotlin"()) }
-
-    "testLibs" { isTransitive = false }
+val testLibs by configurations.creating {
+    isTransitive = false
 }
 
 repositories {
@@ -53,18 +48,16 @@ repositories {
 }
 
 java {
-    setSourceCompatibility(javaVersion)
-    setTargetCompatibility(javaVersion)
+    sourceCompatibility = JavaVersion.toVersion(javaVersion)
+    targetCompatibility = JavaVersion.toVersion(javaVersion)
 }
 
 dependencies {
-    "kotlin"(kotlin("stdlib")) { isTransitive = false }
-    compile(kotlin("stdlib-jdk7")) { isTransitive = false }
-    compile(kotlin("stdlib-jdk8")) { isTransitive = false }
-//    compile("org.openstreetmap.jmapviewer:jmapviewer:2.0")
+    compileOnly(kotlin("stdlib-jdk8"))
+    implementation("org.shredzone.commons:commons-suncalc:3.4")
 
     // Add tools.jar for the JDI API
-    compile(files(Jvm.current().toolsJar))
+    implementation(files(Jvm.current().toolsJar))
 
     "testLibs"("org.jetbrains.idea:mockJDK:1.7-4d76c50")
 }
@@ -145,10 +138,4 @@ runIde {
 }
 
 inline operator fun <T : Task> T.invoke(a: T.() -> Unit): T = apply(a)
-fun DependencyHandlerScope.kotlin(module: String) = kotlin(module, null) as String
-fun intellijPlugin(name: String) = mapOf(
-    "group" to "org.jetbrains.plugins",
-    "name" to name,
-    "version" to ideaVersion,
-    "configuration" to "compile"
-)
+
