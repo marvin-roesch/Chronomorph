@@ -73,30 +73,21 @@ class Chronomorph : Disposable {
         val theme = entry.themeInfo
         val colorScheme = entry.colorSchemeInfo
 
-        var update = false
         val schemeManager = EditorColorsManager.getInstance()
         val currentScheme = schemeManager.globalScheme
-        if (colorScheme != null && currentScheme.name != colorScheme.name) {
-            schemeManager.globalScheme = colorScheme
-            update = true
-        }
 
         val lafManager = LafManager.getInstance()
-        if (theme != null && lafManager.currentLookAndFeel != theme) {
-            runOrSchedule(firstRun) {
-                QuickChangeLookAndFeel.switchLafAndUpdateUI(lafManager, theme, true)
+        ApplicationManager.getApplication().invokeLater {
+            if (theme != null && lafManager.currentLookAndFeel != theme) {
+                QuickChangeLookAndFeel.switchLafAndUpdateUI(lafManager, theme, false)
             }
-            if (!update && !firstRun) {
-                EditorFactory.getInstance().refreshAllEditors()
-            }
-        }
-    }
 
-    private fun runOrSchedule(schedule: Boolean, runnable: () -> Unit) {
-        if (schedule) {
-            ApplicationManager.getApplication().invokeLater(runnable)
-        } else {
-            runnable.invoke()
+            if (colorScheme != null && currentScheme.name != colorScheme.name) {
+                schemeManager.globalScheme = colorScheme
+                if (!firstRun) {
+                    EditorFactory.getInstance().refreshAllEditors()
+                }
+            }
         }
     }
 

@@ -7,21 +7,14 @@
  */
 
 import org.gradle.internal.jvm.Jvm
-import org.jetbrains.intellij.tasks.PublishTask
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
-buildscript {
-    repositories {
-        maven("https://dl.bintray.com/jetbrains/intellij-plugin-service")
-    }
-}
-
 plugins {
-    id("org.jetbrains.kotlin.jvm") version "1.3.31" // kept in sync with IntelliJ's bundled dep
+    id("org.jetbrains.kotlin.jvm") version "1.6.10" // kept in sync with IntelliJ's bundled dep
     groovy
     idea
-    id("org.jetbrains.intellij") version "0.7.0"
-    id("net.minecrell.licenser") version "0.4.1"
+    id("org.jetbrains.intellij") version "1.3.1"
+    id("org.cadixdev.licenser") version "0.6.1"
 }
 
 defaultTasks("build")
@@ -36,7 +29,6 @@ val compileKotlin by tasks
 val processResources: AbstractCopyTask by tasks
 val test: Test by tasks
 val runIde: JavaExec by tasks
-val publishPlugin: PublishTask by tasks
 val clean: Delete by tasks
 
 val testLibs by configurations.creating {
@@ -63,38 +55,33 @@ dependencies {
 }
 
 intellij {
-    // IntelliJ IDEA dependency
-    version = ideaVersion
-    // Bundled plugin dependencies
-    setPlugins(
-        // needed dependencies for unit tests
-        "properties", "junit")
+    pluginName.set("Chronomorph")
+    version.set(ideaVersion)
+    updateSinceUntilBuild.set(false)
+    downloadSources.set(!CI && downloadIdeaSources.toBoolean())
 
-    pluginName = "Chronomorph"
-    updateSinceUntilBuild = false
-
-    downloadSources = !CI && downloadIdeaSources.toBoolean()
-
-    sandboxDirectory = project.rootDir.canonicalPath + "/.sandbox"
+    sandboxDir.set(project.rootDir.canonicalPath + "/.sandbox")
 }
 
-publishPlugin {
-    if (properties["publish"] != null) {
-        project.version = "${project.version}-${properties["buildNumber"]}"
+tasks {
+    publishPlugin {
+        if (project.properties["publish"] != null) {
+            project.version = "${project.version}-${project.properties["buildNumber"]}"
+        }
     }
-}
 
-tasks.withType<JavaCompile> {
-    options.encoding = "UTF-8"
-    options.compilerArgs = listOf("-proc:none")
-}
+    withType<JavaCompile> {
+        options.encoding = "UTF-8"
+        options.compilerArgs = listOf("-proc:none")
+    }
 
-tasks.withType<KotlinCompile> {
-    kotlinOptions.jvmTarget = javaVersion
-}
+    withType<KotlinCompile> {
+        kotlinOptions.jvmTarget = javaVersion
+    }
 
-tasks.withType<GroovyCompile> {
-    options.compilerArgs = listOf("-proc:none")
+    withType<GroovyCompile> {
+        options.compilerArgs = listOf("-proc:none")
+    }
 }
 
 processResources {
@@ -116,13 +103,13 @@ test {
 
 idea {
     module {
-        excludeDirs.add(file(intellij.sandboxDirectory))
+        excludeDirs.add(file(intellij.sandboxDir))
     }
 }
 
 // License header formatting
 license {
-    header = file("copyright.txt")
+    setHeader(file("copyright.txt"))
     include("**/*.java", "**/*.kt", "**/*.groovy", "**/*.gradle", "**/*.xml", "**/*.properties", "**/*.html")
 }
 
